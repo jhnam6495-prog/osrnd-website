@@ -1,9 +1,10 @@
-// 인증현황 페이지 — 신규 CMS 연동(documents-data). 원본은 하드코딩이었으나 관리자가 자유롭게
-// 추가/삭제할 수 있게 되었으므로 "준비중"/"추가 예정" 플레이스홀더 카드는 더 이상 필요 없다.
+// 인증현황 페이지 — 신규 CMS 연동(documents-data). 원본의 3단 배열(등록증류/ISO/특허)을
+// category_ko 기준 그룹핑으로 재현한다. "준비중"/"추가 예정" 플레이스홀더 카드는 실제 CRUD가
+// 생기면서 더 이상 필요 없어져 제외했다.
 import PageHero from '../components/PageHero'
 import DocumentGrid from '../components/DocumentGrid'
 import { getDictionary } from '../lib/i18n/dictionary'
-import { listDocuments } from '../lib/documents'
+import { listDocuments, groupDocumentsByCategory } from '../lib/documents'
 
 export default async function AboutCertPage() {
   const { lang, t } = await getDictionary()
@@ -41,7 +42,33 @@ export default async function AboutCertPage() {
               <p style={{ fontSize: 14, color: 'var(--muted)' }}>{t('cert.empty', '등록된 인증현황이 없습니다.', 'No certifications registered yet.')}</p>
             </div>
           ) : (
-            <DocumentGrid documents={documents} lang={lang} viewOriginalLabel={t('cert.view.original', '원본 보기', 'View Original')} />
+            groupDocumentsByCategory(documents).map((group, i) => {
+              const accent = `var(--${group.accentColor})`
+              const label = group.category_ko ? (lang === 'ko' ? group.category_ko : group.category_en) : null
+              return (
+                <div key={group.category_ko || `uncategorized-${i}`} style={{ marginBottom: 2 }}>
+                  {label && (
+                    <div
+                      style={{
+                        background: 'var(--panel)',
+                        border: '1px solid var(--border)',
+                        borderBottom: 'none',
+                        padding: '16px 28px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 16,
+                      }}
+                    >
+                      <div style={{ width: 2, height: 22, background: accent, flexShrink: 0 }} />
+                      <span style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: accent, letterSpacing: 2, textTransform: 'uppercase' }}>
+                        {label}
+                      </span>
+                    </div>
+                  )}
+                  <DocumentGrid documents={group.documents} lang={lang} viewOriginalLabel={t('cert.view.original', '원본 보기', 'View Original')} />
+                </div>
+              )
+            })
           )}
         </div>
       </div>

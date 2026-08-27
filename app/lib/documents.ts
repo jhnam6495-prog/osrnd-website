@@ -1,9 +1,9 @@
 // 인증현황 CMS 데이터 계층 — documents-data/{id}.json + documents-files/{path}.
 // 기존 AboutCert.jsx는 사업자등록증/R&D인증서/ISO 3종/특허 2종을 전부 하드코딩했다(CMS 없음) —
 // 이 섹션이 그 하드코딩을 실제 CMS로 승격하는 부분이라 필드는 새로 설계했다.
-// 원본의 3단 레이아웃(2열 카드 / ISO 3열 / 특허 3열 + "준비중" 플레이스홀더)은 통합된 단일
-// DocumentGrid 카드 스타일로 단순화했다 — 실제 관리자가 자유롭게 추가/삭제할 수 있게 되면서
-// "준비중" 플레이스홀더 카드 자체가 의미가 없어졌기 때문. category는 그룹 라벨로만 쓰인다.
+// 원본의 3단 레이아웃(등록증류 2열 / ISO 3열 헤더바 / 특허 3열 헤더바)은 category_ko를 그룹
+// 기준으로 쓰는 groupDocumentsByCategory()로 재현한다 — "준비중"/"추가 예정" 플레이스홀더 카드만
+// 제외했다(실제 CRUD가 생기면서 그 자리를 채우는 안내용 카드가 의미 없어졌기 때문).
 import { deleteBlobs, getRecord, listRecords, makeId, putJson, type UploadedFile } from './blob-store'
 
 export type AccentColor = 'cyan' | 'orange'
@@ -101,4 +101,38 @@ export async function deleteDocument(id: string): Promise<void> {
   const existing = await getDocument(id)
   const fileUrls = [existing?.displayImage?.url, existing?.originalPdf?.url].filter((u): u is string => Boolean(u))
   await deleteBlobs([pathOf(id), ...fileUrls])
+}
+
+export type DocumentCategoryGroup = { category_ko: string; category_en: string; accentColor: AccentColor; documents: DocumentEntry[] }
+
+const UNCATEGORIZED_KEY = '__uncategorized__'
+
+/**
+ * 분류(category_ko)별로 묶어 공개 페이지에서 원본처럼 섹션 헤더 + 카드 그리드로 나눠 보여준다.
+ * documents는 이미 order로 정렬되어 있으므로, 그룹 등장 순서도 자연히 order를 따른다 —
+ * 관리자가 사업자등록증(order 낮음)→ISO(중간)→특허(높음) 순으로 order를 매기면 원본과 동일한
+ * 3단 배열이 된다. 분류를 안 채운 문서는 "기타"로 묶인다.
+ */
+export function groupDocumentsByCategory(documents: DocumentEntry[]): DocumentCategoryGroup[] {
+  const order: string[] = []
+  const map = new Map<string, DocumentEntry[]>()
+
+  for (const doc of documents) {
+    const key = doc.category_ko || UNCATEGORIZED_KEY
+    if (!map.has(key)) {
+      map.set(key, [])
+      order.push(key)
+    }
+    map.get(key)!.push(doc)
+  }
+
+  return order.map((key) => {
+    const docsInGroup = map.get(key)!
+    return {
+      category_ko: key === UNCATEGORIZED_KEY ? '' : key,
+      category_en: key === UNCATEGORIZED_KEY ? '' : docsInGroup[0].category_en || key,
+      accentColor: docsInGroup[0].accentColor,
+      documents: docsInGroup,
+    }
+  })
 }
