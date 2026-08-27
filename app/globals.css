@@ -945,6 +945,59 @@ nav {
   background: var(--steel);
 }
 
+/* ── 회사 연혁 ── */
+.hist-wrap {
+  border-left: 1px solid rgba(0, 180, 216, 0.22);
+  padding-left: 44px;
+  margin-top: 50px;
+}
+
+.hist-item {
+  position: relative;
+  padding-bottom: 46px;
+}
+
+.hist-item::before {
+  content: '';
+  position: absolute;
+  left: -49px;
+  top: 8px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--cyan);
+  background: var(--bg);
+}
+
+.hist-year {
+  font-family: var(--font-logo);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 14px;
+}
+
+.hist-events {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hist-ev {
+  display: flex;
+  gap: 14px;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.7;
+}
+
+.hist-ev::before {
+  content: '▸';
+  color: var(--cyan);
+  flex-shrink: 0;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
 /* ── 공지사항 게시판 ── */
 .board-hdr,
 .board-row {
@@ -1308,6 +1361,14 @@ footer {
 
   .stat-num {
     font-size: 32px;
+  }
+
+  .hist-wrap {
+    padding-left: 24px;
+  }
+
+  .hist-year {
+    font-size: 22px;
   }
 
   footer {
