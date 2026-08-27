@@ -42,13 +42,39 @@ function pathOf(id: string): string {
   return `${DATA_PREFIX}${id}.json`
 }
 
+/**
+ * 저장된 JSON이 현재 스키마와 다르게(필드 누락 등) 내려와도 공개 페이지가 절대 죽지 않도록
+ * 방어적으로 기본값을 채운다. CMS 데이터는 시간이 지나며 스키마가 조금씩 바뀔 수 있으므로,
+ * "필드가 있다고 가정하고 바로 .length/.map을 부른다" 대신 항상 이 함수를 거친다.
+ */
+function normalizeDocument(raw: DocumentEntry): DocumentEntry {
+  return {
+    id: raw.id,
+    category_ko: raw.category_ko ?? '',
+    category_en: raw.category_en ?? '',
+    badge_ko: raw.badge_ko ?? '',
+    badge_en: raw.badge_en ?? '',
+    title_ko: raw.title_ko ?? '',
+    title_en: raw.title_en ?? '',
+    accentColor: raw.accentColor === 'orange' ? 'orange' : 'cyan',
+    details: Array.isArray(raw.details) ? raw.details : [],
+    desc_ko: raw.desc_ko ?? '',
+    desc_en: raw.desc_en ?? '',
+    displayImage: raw.displayImage ?? null,
+    originalPdf: raw.originalPdf ?? null,
+    order: typeof raw.order === 'number' ? raw.order : 0,
+    createdAt: raw.createdAt ?? '',
+  }
+}
+
 export async function listDocuments(): Promise<DocumentEntry[]> {
   const docs = await listRecords<DocumentEntry>(DATA_PREFIX)
-  return docs.sort((a, b) => a.order - b.order || a.createdAt.localeCompare(b.createdAt))
+  return docs.map(normalizeDocument).sort((a, b) => a.order - b.order || a.createdAt.localeCompare(b.createdAt))
 }
 
 export async function getDocument(id: string): Promise<DocumentEntry | null> {
-  return getRecord<DocumentEntry>(pathOf(id))
+  const doc = await getRecord<DocumentEntry>(pathOf(id))
+  return doc ? normalizeDocument(doc) : null
 }
 
 export async function createDocument(input: DocumentInput): Promise<DocumentEntry> {
