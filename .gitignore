@@ -18,6 +18,9 @@ dist-ssr
 next-env.d.ts
 *.tsbuildinfo
 
+# 환경변수 (ADMIN_PASSWORD, SESSION_SECRET 등 — 절대 커밋하지 않음)
+.env*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

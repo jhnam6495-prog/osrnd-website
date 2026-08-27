@@ -64,6 +64,8 @@ export function LangProvider({ initialLang, children }: { initialLang: Lang; chi
     if ((saved === 'ko' || saved === 'en') && saved !== initialLang) {
       writeLangCookie(saved)
       applyDocumentLang(saved)
+      // localStorage는 서버가 절대 미리 알 수 없는 브라우저 전용 값이라 마운트 후 보정이 불가피하다.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLangState(saved)
       router.refresh()
     } else {
