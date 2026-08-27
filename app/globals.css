@@ -838,6 +838,114 @@ nav {
   font-family: var(--font-label);
 }
 
+/* ── 문의 양식 ── */
+.contact-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.cinfo {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cdiv {
+  height: 1px;
+  background: var(--border);
+}
+
+.clabel {
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--cyan);
+  margin-bottom: 6px;
+  font-family: var(--font-label);
+  text-transform: uppercase;
+}
+
+.cval {
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.85;
+}
+
+.frow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.fg {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.fg label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--cyan);
+  font-family: var(--font-label);
+  text-transform: uppercase;
+}
+
+.fg input,
+.fg select,
+.fg textarea {
+  background: rgba(22, 32, 48, 0.85);
+  border: 1px solid rgba(0, 180, 216, 0.18);
+  color: var(--white);
+  padding: 13px 16px;
+  font-size: 13.5px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.3s;
+  -webkit-appearance: none;
+  width: 100%;
+}
+
+.fg input:focus,
+.fg select:focus,
+.fg textarea:focus {
+  border-color: var(--cyan);
+}
+
+.fg textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.fg select option {
+  background: var(--panel);
+}
+
+.fsubmit {
+  padding: 16px;
+  background: var(--orange);
+  color: var(--white);
+  border: none;
+  font-size: 13px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.fsubmit:hover {
+  background: var(--orange-l);
+}
+
+.fsubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ── 지도 / 위치 ── */
 .map-wrap {
   display: grid;
@@ -1278,9 +1386,14 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .map-wrap {
+  .map-wrap,
+  .contact-wrap {
     grid-template-columns: 1fr;
     gap: 40px;
+  }
+
+  .frow {
+    grid-template-columns: 1fr;
   }
 
   .board-hdr,
