@@ -1,6 +1,6 @@
 // 오시는 길 페이지
 import PageHero from '../components/PageHero'
-import KakaoMap from '../components/KakaoMap'
+import GoogleMap from '../components/GoogleMap'
 import { getDictionary } from '../lib/i18n/dictionary'
 
 const LAT = 35.567965
@@ -60,7 +60,7 @@ export default async function AboutLocationPage() {
           <div className="map-wrap">
             <div>
               <div style={{ width: '100%', border: '1px solid var(--border)' }}>
-                <KakaoMap lat={LAT} lng={LNG} markerLabel="오에스알앤디㈜" />
+                <GoogleMap lat={LAT} lng={LNG} label="오에스알앤디㈜" />
                 <div
                   style={{
                     padding: '10px 16px',
@@ -71,9 +71,9 @@ export default async function AboutLocationPage() {
                     alignItems: 'center',
                   }}
                 >
-                  <span style={{ fontSize: 12, color: 'var(--muted)' }}>카카오맵</span>
+                  <span style={{ fontSize: 12, color: 'var(--muted)' }}>Google 지도</span>
                   <a
-                    href="https://map.kakao.com/?q=울산+북구+산성로+40"
+                    href={`https://www.google.com/maps?q=${LAT},${LNG}`}
                     target="_blank"
                     rel="noreferrer"
                     style={{ fontSize: 12, color: 'var(--cyan)', textDecoration: 'none', fontFamily: 'var(--font-label)' }}
