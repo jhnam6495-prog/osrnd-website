@@ -63,8 +63,14 @@ export function parseUploadedFiles(raw: FormDataEntryValue | null): UploadedFile
   if (typeof raw !== 'string' || !raw) return []
   try {
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : [parsed]
+    if (parsed === null || parsed === undefined) return []
+    return Array.isArray(parsed) ? parsed.filter((v): v is UploadedFile => v !== null) : [parsed]
   } catch {
     return []
   }
+}
+
+/** 단일 파일용 편의 함수 — BlobFileInput 하나짜리 필드에서 쓴다 */
+export function parseUploadedFile(raw: FormDataEntryValue | null): UploadedFile | null {
+  return parseUploadedFiles(raw)[0] ?? null
 }
