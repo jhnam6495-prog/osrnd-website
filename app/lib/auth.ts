@@ -2,6 +2,8 @@
 // proxy.ts(구 middleware.ts)와 app/api/admin/* 양쪽에서 공용으로 쓴다.
 // Next.js 16에서 Proxy 기본 런타임이 Node.js로 바뀌었지만, crypto.subtle은 Node/Edge 양쪽에서 동일하게
 // 동작하므로 굳이 Node 전용 `crypto` 모듈로 바꾸지 않는다 — 이식성이 더 넓은 쪽을 유지.
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
 export const ADMIN_COOKIE_NAME = 'osrnd_admin_session'
 
@@ -77,4 +79,15 @@ export async function isValidSessionToken(token: string | undefined | null): Pro
   } catch {
     return false
   }
+}
+
+/**
+ * 모든 CMS Server Action의 맨 앞에서 호출하는 공용 가드.
+ * Next.js 16 공식 문서는 Proxy의 matcher 체인이 Server Function 호출을 우회할 수 있다고 경고하므로,
+ * 페이지 라우트 보호(proxy.ts)와 별개로 각 Server Action 내부에서도 세션을 반드시 재검증한다.
+ */
+export async function assertAdminSession(): Promise<void> {
+  const store = await cookies()
+  const authed = await isValidSessionToken(store.get(ADMIN_COOKIE_NAME)?.value)
+  if (!authed) redirect('/admin')
 }

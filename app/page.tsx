@@ -1,7 +1,9 @@
 // 홈페이지 — 히어로, 사업분야, 제품, 고객사, CTA
 import Link from 'next/link'
 import FadeIn from './components/FadeIn'
+import HomeNoticePopup from './components/HomeNoticePopup'
 import { getDictionary } from './lib/i18n/dictionary'
+import { listFeaturedNotices } from './lib/notices'
 
 const CLIENT_LOGOS = [
   { src: '/images/logo-hwashin.png', alt: '㈜화신' },
@@ -11,10 +13,13 @@ const CLIENT_LOGOS = [
 ]
 
 export default async function HomePage() {
-  const { t } = await getDictionary()
+  const { lang, t } = await getDictionary()
+  const featuredNotices = await listFeaturedNotices()
 
   return (
     <>
+      <HomeNoticePopup notices={featuredNotices} lang={lang} />
+
       {/* ── 히어로 ── */}
       <section style={{ minHeight: '100vh', position: 'relative', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0 }}>

@@ -945,6 +945,33 @@ nav {
   background: var(--steel);
 }
 
+/* ── 공지사항 게시판 ── */
+.board-hdr,
+.board-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 130px 80px;
+}
+
+.board-hdr {
+  padding: 12px 22px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: var(--font-label);
+  margin-bottom: 2px;
+}
+
+.board-row {
+  padding: 15px 22px;
+  border: 1px solid rgba(0, 180, 216, 0.06);
+  border-bottom: 1px solid rgba(0, 180, 216, 0.08);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
 /* ── 조직도 ── */
 .org-line {
   width: 1px;
@@ -1203,6 +1230,16 @@ footer {
     gap: 40px;
   }
 
+  .board-hdr,
+  .board-row {
+    grid-template-columns: 50px 1fr 100px;
+  }
+
+  .board-hdr > :nth-child(n + 4),
+  .board-row > :nth-child(n + 4) {
+    display: none;
+  }
+
   .ft-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -1249,6 +1286,16 @@ footer {
 
   .client-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .board-hdr,
+  .board-row {
+    grid-template-columns: 40px 1fr;
+  }
+
+  .board-hdr > :nth-child(n + 3),
+  .board-row > :nth-child(n + 3) {
+    display: none;
   }
 
   .ft-grid {
