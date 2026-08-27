@@ -1,6 +1,8 @@
-// 인증현황 페이지 — 신규 CMS 연동(documents-data). 원본의 3단 배열(등록증류/ISO/특허)을
-// category_ko 기준 그룹핑으로 재현한다. "준비중"/"추가 예정" 플레이스홀더 카드는 실제 CRUD가
-// 생기면서 더 이상 필요 없어져 제외했다.
+// 인증현황 페이지 — 신규 CMS 연동(documents-data). 원본의 3단 배열(등록증류 2열 넓은 카드 /
+// ISO 3열 헤더바 / 특허 3열 헤더바+빈칸 "추가 예정" 카드)을 재현한다.
+// 규칙: order로 정렬된 첫 번째 카테고리 그룹만 "wide" 스타일(헤더바 없음, 칸 채우기 없음) —
+// 나머지 그룹은 전부 "compact" 스타일(헤더바 있음, 3칸으로 고정하고 부족하면 "추가 예정"으로 채움).
+// 관리자가 order를 사업자등록증류를 가장 낮게 잡으면 이 규칙만으로 원본과 동일한 배열이 된다.
 import PageHero from '../components/PageHero'
 import DocumentGrid from '../components/DocumentGrid'
 import { getDictionary } from '../lib/i18n/dictionary'
@@ -45,9 +47,11 @@ export default async function AboutCertPage() {
             groupDocumentsByCategory(documents).map((group, i) => {
               const accent = `var(--${group.accentColor})`
               const label = group.category_ko ? (lang === 'ko' ? group.category_ko : group.category_en) : null
+              const isFirst = i === 0
+
               return (
-                <div key={group.category_ko || `uncategorized-${i}`} style={{ marginBottom: 2 }}>
-                  {label && (
+                <div key={group.category_ko || `uncategorized-${i}`} style={{ marginBottom: isFirst ? 50 : 2 }}>
+                  {!isFirst && label && (
                     <div
                       style={{
                         background: 'var(--panel)',
@@ -65,7 +69,14 @@ export default async function AboutCertPage() {
                       </span>
                     </div>
                   )}
-                  <DocumentGrid documents={group.documents} lang={lang} viewOriginalLabel={t('cert.view.original', '원본 보기', 'View Original')} />
+                  <DocumentGrid
+                    documents={group.documents}
+                    lang={lang}
+                    viewOriginalLabel={t('cert.view.original', '원본 보기', 'View Original')}
+                    variant={isFirst ? 'wide' : 'compact'}
+                    minSlots={isFirst ? 0 : 3}
+                    emptySlotLabel={label ? `${label} ${t('cert.slot.more', '추가 예정', 'To Be Added')}` : undefined}
+                  />
                 </div>
               )
             })

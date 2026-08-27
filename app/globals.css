@@ -1392,6 +1392,10 @@ footer {
     gap: 40px;
   }
 
+  .doc-grid-3 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
   .frow {
     grid-template-columns: 1fr;
   }
@@ -1452,6 +1456,10 @@ footer {
 
   .client-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .doc-grid-3 {
+    grid-template-columns: 1fr !important;
   }
 
   .board-hdr,
