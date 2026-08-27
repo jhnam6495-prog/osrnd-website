@@ -31,8 +31,24 @@ function pathOf(id: string): string {
   return `${PREFIX}${id}.json`
 }
 
+/** documents.ts와 동일한 이유로 방어적 정규화 — 스키마와 다른(필드 누락) 레코드가 내려와도 항상 안전한 값으로 채운다. */
+function normalizeNotice(raw: Notice): Notice {
+  return {
+    id: raw.id,
+    title_ko: raw.title_ko ?? '',
+    title_en: raw.title_en ?? '',
+    content_ko: raw.content_ko ?? '',
+    content_en: raw.content_en ?? '',
+    pinned: raw.pinned ?? false,
+    featured: raw.featured ?? false,
+    views: typeof raw.views === 'number' && !Number.isNaN(raw.views) ? raw.views : 0,
+    createdAt: raw.createdAt ?? '',
+    updatedAt: raw.updatedAt ?? raw.createdAt ?? '',
+  }
+}
+
 export async function listNotices(): Promise<Notice[]> {
-  const notices = await listRecords<Notice>(PREFIX)
+  const notices = (await listRecords<Notice>(PREFIX)).map(normalizeNotice)
   return notices.sort((a, b) => {
     if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
     return b.createdAt.localeCompare(a.createdAt)
@@ -46,7 +62,8 @@ export async function listFeaturedNotices(): Promise<Notice[]> {
 }
 
 export async function getNotice(id: string): Promise<Notice | null> {
-  return getRecord<Notice>(pathOf(id))
+  const notice = await getRecord<Notice>(pathOf(id))
+  return notice ? normalizeNotice(notice) : null
 }
 
 export async function createNotice(input: NoticeInput): Promise<Notice> {

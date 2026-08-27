@@ -21,13 +21,25 @@ function pathOf(id: string): string {
   return `${PREFIX}${id}.json`
 }
 
+/** notices.ts/documents.ts와 동일한 이유의 방어적 정규화 */
+function normalizeHistoryEntry(raw: HistoryEntry): HistoryEntry {
+  return {
+    id: raw.id,
+    year: raw.year ?? '',
+    content_ko: raw.content_ko ?? '',
+    content_en: raw.content_en ?? '',
+    createdAt: raw.createdAt ?? '',
+  }
+}
+
 export async function listHistory(): Promise<HistoryEntry[]> {
-  const entries = await listRecords<HistoryEntry>(PREFIX)
+  const entries = (await listRecords<HistoryEntry>(PREFIX)).map(normalizeHistoryEntry)
   return entries.sort((a, b) => b.year.localeCompare(a.year) || b.createdAt.localeCompare(a.createdAt))
 }
 
 export async function getHistoryEntry(id: string): Promise<HistoryEntry | null> {
-  return getRecord<HistoryEntry>(pathOf(id))
+  const entry = await getRecord<HistoryEntry>(pathOf(id))
+  return entry ? normalizeHistoryEntry(entry) : null
 }
 
 export async function createHistoryEntry(input: HistoryInput): Promise<HistoryEntry> {

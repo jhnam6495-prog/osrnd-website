@@ -53,13 +53,32 @@ function pathOf(id: string): string {
   return `${PREFIX}${id}.json`
 }
 
+/** notices.ts/documents.ts와 동일한 이유의 방어적 정규화 */
+function normalizeInquiry(raw: Inquiry): Inquiry {
+  return {
+    id: raw.id,
+    name: raw.name ?? '',
+    phone: raw.phone ?? '',
+    email: raw.email ?? '',
+    company: raw.company ?? '',
+    inquiry_type: raw.inquiry_type ?? '',
+    message: raw.message ?? '',
+    status: raw.status === 'processing' || raw.status === 'done' ? raw.status : 'new',
+    lang: raw.lang === 'en' ? 'en' : 'ko',
+    reply: raw.reply ?? null,
+    repliedAt: raw.repliedAt ?? null,
+    createdAt: raw.createdAt ?? '',
+  }
+}
+
 export async function listInquiries(): Promise<Inquiry[]> {
-  const inquiries = await listRecords<Inquiry>(PREFIX)
+  const inquiries = (await listRecords<Inquiry>(PREFIX)).map(normalizeInquiry)
   return inquiries.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
 export async function getInquiry(id: string): Promise<Inquiry | null> {
-  return getRecord<Inquiry>(pathOf(id))
+  const inquiry = await getRecord<Inquiry>(pathOf(id))
+  return inquiry ? normalizeInquiry(inquiry) : null
 }
 
 /** 공개 문의 접수 — 인증 불필요 */

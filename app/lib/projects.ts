@@ -31,13 +31,29 @@ function pathOf(id: string): string {
   return `${PREFIX}${id}.json`
 }
 
+/** notices.ts/documents.ts와 동일한 이유의 방어적 정규화 */
+function normalizeProject(raw: ProjectRecord): ProjectRecord {
+  return {
+    id: raw.id,
+    year: raw.year ?? '',
+    date: raw.date ?? '',
+    content_ko: raw.content_ko ?? '',
+    content_en: raw.content_en ?? '',
+    tag_ko: raw.tag_ko ?? '',
+    tag_en: raw.tag_en ?? '',
+    image: raw.image ?? null,
+    createdAt: raw.createdAt ?? '',
+  }
+}
+
 export async function listProjects(): Promise<ProjectRecord[]> {
-  const records = await listRecords<ProjectRecord>(PREFIX)
+  const records = (await listRecords<ProjectRecord>(PREFIX)).map(normalizeProject)
   return records.sort((a, b) => a.date.localeCompare(b.date))
 }
 
 export async function getProject(id: string): Promise<ProjectRecord | null> {
-  return getRecord<ProjectRecord>(pathOf(id))
+  const record = await getRecord<ProjectRecord>(pathOf(id))
+  return record ? normalizeProject(record) : null
 }
 
 export async function createProject(input: ProjectInput): Promise<ProjectRecord> {
